@@ -10,10 +10,15 @@ import UIKit
 
 class DodoViewController: UITableViewController {
     
-    let itemArray = ["item1","item2","item3"]
+    var itemArray = ["Buy eggs","Buy bread","Buy toilet paper"]
+    
+    let defaults = UserDefaults.standard
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        if let todoItems = defaults.array(forKey: "dodoArray") {
+            itemArray = todoItems as! [String]
+        }
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -39,5 +44,25 @@ class DodoViewController: UITableViewController {
         
     }
 
+    @IBAction func addButtonPressed(_ sender: UIBarButtonItem) {
+        
+        var textField = UITextField()
+        
+        let alert = UIAlertController(title: "Add new dodo", message: "", preferredStyle: .alert)
+        
+        let action = UIAlertAction(title: "Add item", style: .default) { (action) in
+            self.itemArray.append(textField.text!)
+            self.tableView.reloadData()
+            self.defaults.set(self.itemArray, forKey: "dodoArray")
+        }
+        
+        alert.addTextField { (alertTextField) in
+            alertTextField.placeholder = "Buy more ice cream"
+            textField = alertTextField
+        }
+        
+        alert.addAction(action)
+        present(alert, animated: true, completion: nil)
+    }
 }
 
