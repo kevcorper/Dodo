@@ -10,15 +10,13 @@ import UIKit
 
 class DodoViewController: UITableViewController {
     
-    var itemArray = ["Buy eggs","Buy bread","Buy toilet paper"]
+    var itemArray = [Item]()
     
-    let defaults = UserDefaults.standard
+    let dataFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("Items.plist")
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        if let todoItems = defaults.array(forKey: "dodoArray") {
-            itemArray = todoItems as! [String]
-        }
+        loadItems()
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -27,33 +25,29 @@ class DodoViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "DodoItemCell", for: indexPath)
-        cell.textLabel?.text = itemArray[indexPath.row]
+        let item = itemArray[indexPath.row]
+        
+        cell.textLabel?.text = item.name
+        cell.accessoryType = item.finished ? .checkmark : .none
+        
         return cell
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        itemArray[indexPath.row].finished = !itemArray[indexPath.row].finished
+        saveItems()
         tableView.deselectRow(at: indexPath, animated: true)
-        
-        let cell = tableView.cellForRow(at: indexPath)
-        
-        if (cell?.accessoryType == .checkmark) {
-            cell?.accessoryType = .none
-        } else {
-            cell?.accessoryType = .checkmark
-        }
-        
     }
 
     @IBAction func addButtonPressed(_ sender: UIBarButtonItem) {
-        
         var textField = UITextField()
         
         let alert = UIAlertController(title: "Add new dodo", message: "", preferredStyle: .alert)
         
         let action = UIAlertAction(title: "Add item", style: .default) { (action) in
-            self.itemArray.append(textField.text!)
-            self.tableView.reloadData()
-            self.defaults.set(self.itemArray, forKey: "dodoArray")
+            let newItem = Item(text: textField.text!)
+            self.itemArray.append(newItem)
+            self.saveItems()
         }
         
         alert.addTextField { (alertTextField) in
@@ -63,6 +57,29 @@ class DodoViewController: UITableViewController {
         
         alert.addAction(action)
         present(alert, animated: true, completion: nil)
+    }
+    
+    func saveItems() {
+        let encoder = PropertyListEncoder()
+        do {
+            let data = try encoder.encode(itemArray)
+            try data.write(to: dataFilePath!)
+        } catch {
+            print("There was a problem encode the itemArray, error: \(error)")
+        }
+        tableView.reloadData()
+        
+    }
+    
+    func loadItems() {
+        if let data = try? Data(contentsOf: dataFilePath!) {
+            let decoder = PropertyListDecoder()
+            do {
+                itemArray = try decoder.decode([Item].self, from: data)
+            } catch {
+                print("Unable to decode data, error: \(error)")
+            }
+        }
     }
 }
 
