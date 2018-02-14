@@ -11,9 +11,14 @@ import UIKit
 class DodoViewController: UITableViewController {
     
     var itemArray = ["Buy eggs","Buy bread","Buy toilet paper"]
+    
+    let defaults = UserDefaults.standard
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        if let todoItems = defaults.array(forKey: "dodoArray") {
+            itemArray = todoItems as! [String]
+        }
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -48,6 +53,7 @@ class DodoViewController: UITableViewController {
         let action = UIAlertAction(title: "Add item", style: .default) { (action) in
             self.itemArray.append(textField.text!)
             self.tableView.reloadData()
+            self.defaults.set(self.itemArray, forKey: "dodoArray")
         }
         
         alert.addTextField { (alertTextField) in
