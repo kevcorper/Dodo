@@ -16,7 +16,7 @@ class DodoViewController: UITableViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-            print(FileManager.default.urls(for: .documentDirectory, in: .userDomainMask))
+        searchBar.delegate = self
         loadItems()
     }
     
@@ -40,6 +40,7 @@ class DodoViewController: UITableViewController {
         tableView.deselectRow(at: indexPath, animated: true)
     }
 
+    @IBOutlet weak var searchBar: UISearchBar!
     @IBAction func addButtonPressed(_ sender: UIBarButtonItem) {
         var textField = UITextField()
         
@@ -73,13 +74,32 @@ class DodoViewController: UITableViewController {
         
     }
     
-    func loadItems() {
-        let request : NSFetchRequest<Item> = Item.fetchRequest()
-        
+    func loadItems(with request:NSFetchRequest<Item> = Item.fetchRequest()) {
         do {
             itemArray = try context.fetch(request)
         } catch {
             print("Error in loading items with context fetch, \(error)")
+        }
+        tableView.reloadData()
+    }
+}
+
+// MARK: search bar methods
+extension DodoViewController : UISearchBarDelegate {
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        let request : NSFetchRequest<Item> = Item.fetchRequest()
+        request.predicate = NSPredicate(format: "name CONTAINS[cd] %@", searchBar.text!)
+        request.sortDescriptors = [NSSortDescriptor(key: "name", ascending: true)]
+        
+        loadItems(with: request)
+    }
+    
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        if searchBar.text?.count == 0 {
+            loadItems()
+            DispatchQueue.main.async {
+                searchBar.resignFirstResponder()
+            }
         }
     }
 }
