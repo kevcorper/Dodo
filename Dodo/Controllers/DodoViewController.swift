@@ -7,15 +7,16 @@
 //
 
 import UIKit
+import CoreData
 
 class DodoViewController: UITableViewController {
     
     var itemArray = [Item]()
-    
-    let dataFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("Items.plist")
+    let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
 
     override func viewDidLoad() {
         super.viewDidLoad()
+            print(FileManager.default.urls(for: .documentDirectory, in: .userDomainMask))
         loadItems()
     }
     
@@ -45,7 +46,10 @@ class DodoViewController: UITableViewController {
         let alert = UIAlertController(title: "Add new dodo", message: "", preferredStyle: .alert)
         
         let action = UIAlertAction(title: "Add item", style: .default) { (action) in
-            let newItem = Item(text: textField.text!)
+            
+            let newItem = Item(context: self.context)
+            newItem.name = textField.text
+            newItem.finished = false
             self.itemArray.append(newItem)
             self.saveItems()
         }
@@ -60,25 +64,22 @@ class DodoViewController: UITableViewController {
     }
     
     func saveItems() {
-        let encoder = PropertyListEncoder()
         do {
-            let data = try encoder.encode(itemArray)
-            try data.write(to: dataFilePath!)
+            try context.save()
         } catch {
-            print("There was a problem encode the itemArray, error: \(error)")
+            print("Error saving context \(error)")
         }
         tableView.reloadData()
         
     }
     
     func loadItems() {
-        if let data = try? Data(contentsOf: dataFilePath!) {
-            let decoder = PropertyListDecoder()
-            do {
-                itemArray = try decoder.decode([Item].self, from: data)
-            } catch {
-                print("Unable to decode data, error: \(error)")
-            }
+        let request : NSFetchRequest<Item> = Item.fetchRequest()
+        
+        do {
+            itemArray = try context.fetch(request)
+        } catch {
+            print("Error in loading items with context fetch, \(error)")
         }
     }
 }
