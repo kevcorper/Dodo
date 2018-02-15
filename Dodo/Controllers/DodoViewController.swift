@@ -12,6 +12,11 @@ import CoreData
 class DodoViewController: UITableViewController {
     
     var itemArray = [Item]()
+    var selectedCategory : Category? {
+        didSet {
+            loadItems()
+        }
+    }
     let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
 
     override func viewDidLoad() {
@@ -44,13 +49,14 @@ class DodoViewController: UITableViewController {
     @IBAction func addButtonPressed(_ sender: UIBarButtonItem) {
         var textField = UITextField()
         
-        let alert = UIAlertController(title: "Add new dodo", message: "", preferredStyle: .alert)
+        let alert = UIAlertController(title: "Add new item to this Dodo", message: "", preferredStyle: .alert)
         
         let action = UIAlertAction(title: "Add item", style: .default) { (action) in
             
             let newItem = Item(context: self.context)
             newItem.name = textField.text
             newItem.finished = false
+            newItem.category = self.selectedCategory
             self.itemArray.append(newItem)
             self.saveItems()
         }
@@ -74,7 +80,15 @@ class DodoViewController: UITableViewController {
         
     }
     
-    func loadItems(with request:NSFetchRequest<Item> = Item.fetchRequest()) {
+    func loadItems(with request:NSFetchRequest<Item> = Item.fetchRequest(), predicate : NSPredicate? = nil) {
+        let categoryPredicate = NSPredicate(format: "category.name MATCHES %@", selectedCategory!.name!)
+        
+        if let additionalPredicate = predicate {
+            request.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [categoryPredicate, additionalPredicate])
+        } else {
+            request.predicate = categoryPredicate
+        }
+        
         do {
             itemArray = try context.fetch(request)
         } catch {
@@ -88,10 +102,10 @@ class DodoViewController: UITableViewController {
 extension DodoViewController : UISearchBarDelegate {
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         let request : NSFetchRequest<Item> = Item.fetchRequest()
-        request.predicate = NSPredicate(format: "name CONTAINS[cd] %@", searchBar.text!)
+        let predicate = NSPredicate(format: "name CONTAINS[cd] %@", searchBar.text!)
         request.sortDescriptors = [NSSortDescriptor(key: "name", ascending: true)]
         
-        loadItems(with: request)
+        loadItems(with: request, predicate: predicate)
     }
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
