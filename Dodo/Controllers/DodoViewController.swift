@@ -7,17 +7,18 @@
 //
 
 import UIKit
-import CoreData
+import RealmSwift
 
 class DodoViewController: UITableViewController {
     
-    var itemArray = [Item]()
+    var dodoItems : Results<Item>?
+    let realm = try! Realm()
+    
     var selectedCategory : Category? {
         didSet {
             loadItems()
         }
     }
-    let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -25,25 +26,39 @@ class DodoViewController: UITableViewController {
         loadItems()
     }
     
+    // MARK: Tableview Datasource Methods
+    
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return itemArray.count
+        return dodoItems?.count ?? 1
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "DodoItemCell", for: indexPath)
-        let item = itemArray[indexPath.row]
         
-        cell.textLabel?.text = item.name
-        cell.accessoryType = item.finished ? .checkmark : .none
-        
+        if let item = dodoItems?[indexPath.row] {
+            cell.textLabel?.text = item.name
+            cell.accessoryType = item.finished ? .checkmark : .none
+        } else {
+            cell.textLabel?.text = "No items have been added yet!"
+        }
         return cell
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        itemArray[indexPath.row].finished = !itemArray[indexPath.row].finished
-        saveItems()
         tableView.deselectRow(at: indexPath, animated: true)
+        if let item = dodoItems?[indexPath.row] {
+            do {
+                try self.realm.write{
+                    item.finished = !item.finished
+                }
+            } catch {
+                print("Error saving finished status: \(error)")
+            }
+        }
+        tableView.reloadData()
     }
+    
+    // MARK: add new item
 
     @IBOutlet weak var searchBar: UISearchBar!
     @IBAction func addButtonPressed(_ sender: UIBarButtonItem) {
@@ -53,12 +68,19 @@ class DodoViewController: UITableViewController {
         
         let action = UIAlertAction(title: "Add item", style: .default) { (action) in
             
-            let newItem = Item(context: self.context)
-            newItem.name = textField.text
-            newItem.finished = false
-            newItem.category = self.selectedCategory
-            self.itemArray.append(newItem)
-            self.saveItems()
+            if let currentCategory = self.selectedCategory {
+                do {
+                    try self.realm.write{
+                        let newItem = Item()
+                        newItem.name = textField.text!
+                        newItem.dateCreated = Date()
+                        currentCategory.items.append(newItem)
+                    }
+                } catch {
+                    print("Error saving item: \(error)")
+                }
+            }
+            self.tableView.reloadData()
         }
         
         alert.addTextField { (alertTextField) in
@@ -70,30 +92,10 @@ class DodoViewController: UITableViewController {
         present(alert, animated: true, completion: nil)
     }
     
-    func saveItems() {
-        do {
-            try context.save()
-        } catch {
-            print("Error saving context \(error)")
-        }
-        tableView.reloadData()
-        
-    }
+    // MARK: load data methods
     
-    func loadItems(with request:NSFetchRequest<Item> = Item.fetchRequest(), predicate : NSPredicate? = nil) {
-        let categoryPredicate = NSPredicate(format: "category.name MATCHES %@", selectedCategory!.name!)
-        
-        if let additionalPredicate = predicate {
-            request.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [categoryPredicate, additionalPredicate])
-        } else {
-            request.predicate = categoryPredicate
-        }
-        
-        do {
-            itemArray = try context.fetch(request)
-        } catch {
-            print("Error in loading items with context fetch, \(error)")
-        }
+    func loadItems() {
+        dodoItems = selectedCategory?.items.sorted(byKeyPath: "dateCreated", ascending: true)
         tableView.reloadData()
     }
 }
@@ -101,13 +103,10 @@ class DodoViewController: UITableViewController {
 // MARK: search bar methods
 extension DodoViewController : UISearchBarDelegate {
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        let request : NSFetchRequest<Item> = Item.fetchRequest()
-        let predicate = NSPredicate(format: "name CONTAINS[cd] %@", searchBar.text!)
-        request.sortDescriptors = [NSSortDescriptor(key: "name", ascending: true)]
-        
-        loadItems(with: request, predicate: predicate)
+        dodoItems = dodoItems?.filter("name CONTAINS[cd] %@", searchBar.text!).sorted(byKeyPath: "dateCreated", ascending: true)
+        tableView.reloadData()
     }
-    
+
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         if searchBar.text?.count == 0 {
             loadItems()
@@ -117,4 +116,5 @@ extension DodoViewController : UISearchBarDelegate {
         }
     }
 }
+
 
