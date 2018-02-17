@@ -8,8 +8,9 @@
 
 import UIKit
 import RealmSwift
+import SwipeCellKit
 
-class DodoViewController: UITableViewController {
+class DodoViewController: SwipeTableViewController {
     
     var dodoItems : Results<Item>?
     let realm = try! Realm()
@@ -33,8 +34,7 @@ class DodoViewController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "DodoItemCell", for: indexPath)
-        
+        let cell = super.tableView(tableView, cellForRowAt: indexPath)
         if let item = dodoItems?[indexPath.row] {
             cell.textLabel?.text = item.name
             cell.accessoryType = item.finished ? .checkmark : .none
@@ -97,6 +97,24 @@ class DodoViewController: UITableViewController {
     func loadItems() {
         dodoItems = selectedCategory?.items.sorted(byKeyPath: "dateCreated", ascending: true)
         tableView.reloadData()
+    }
+    
+    override func deleteFromModel(at indexPath: IndexPath) {
+        if let itemToDelete = self.dodoItems?[indexPath.row] {
+            do {
+                try self.realm.write {
+                    self.realm.delete(itemToDelete)
+                }
+            } catch {
+                print("could not delete item, \(error)")
+            }
+        }
+    }
+    
+    override func tableView(_ tableView: UITableView, editActionsOptionsForRowAt indexPath: IndexPath, for orientation: SwipeActionsOrientation) -> SwipeTableOptions {
+        var options = super.tableView(tableView, editActionsOptionsForRowAt: indexPath, for: orientation)
+        options.expansionStyle = .destructive
+        return options
     }
 }
 

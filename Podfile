@@ -5,4 +5,5 @@ target 'Dodo' do
 
   # Pods for Dodo
     pod 'RealmSwift'
+    pod 'SwipeCellKit'
 end
