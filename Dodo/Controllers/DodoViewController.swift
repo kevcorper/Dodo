@@ -9,6 +9,7 @@
 import UIKit
 import RealmSwift
 import SwipeCellKit
+import ChameleonFramework
 
 class DodoViewController: SwipeTableViewController {
     
@@ -24,7 +25,29 @@ class DodoViewController: SwipeTableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         searchBar.delegate = self
+        tableView.separatorStyle = .none
         loadItems()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        title = selectedCategory?.name
+        guard let navigationColor = selectedCategory?.color else {fatalError("Unable to retrieve navigationColor")}
+        updateNavBar(withHexCode: navigationColor)
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        updateNavBar(withHexCode: "77D4D4")
+    }
+    
+    // MARK: Navbar setup methods
+    
+    func updateNavBar(withHexCode colorHexCode: String) {
+        guard let navbar = navigationController?.navigationBar else {fatalError("Unable to retrieve navBar")}
+        guard let navigationColor = UIColor(hexString: colorHexCode) else {fatalError("Unable to create original navigation color")}
+        navbar.barTintColor = navigationColor
+        navbar.tintColor = ContrastColorOf(navigationColor, returnFlat: true)
+        navbar.largeTitleTextAttributes = [NSAttributedStringKey.foregroundColor: ContrastColorOf(navigationColor, returnFlat: true)]
+        searchBar.barTintColor = navigationColor
     }
     
     // MARK: Tableview Datasource Methods
@@ -38,6 +61,11 @@ class DodoViewController: SwipeTableViewController {
         if let item = dodoItems?[indexPath.row] {
             cell.textLabel?.text = item.name
             cell.accessoryType = item.finished ? .checkmark : .none
+            
+            if let color = UIColor(hexString: (selectedCategory!.color))?.darken(byPercentage: CGFloat(indexPath.row) / CGFloat(dodoItems!.count)) {
+                    cell.backgroundColor = color
+                    cell.textLabel?.textColor = ContrastColorOf(color, returnFlat: true)
+            }
         } else {
             cell.textLabel?.text = "No items have been added yet!"
         }

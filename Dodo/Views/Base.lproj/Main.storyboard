@@ -40,7 +40,6 @@
                     </tableView>
                     <navigationItem key="navigationItem" title="Items" id="OiX-Ug-O4l">
                         <barButtonItem key="rightBarButtonItem" systemItem="add" id="UlZ-TD-NCf">
-                            <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                             <connections>
                                 <action selector="addButtonPressed:" destination="b6G-bo-sOG" id="vr9-Cg-Z2g"/>
                             </connections>
@@ -59,10 +58,10 @@
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="Hu1-W2-mxi" sceneMemberID="viewController">
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="oSb-QO-Y1E">
-                        <rect key="frame" x="0.0" y="20" width="375" height="44"/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" largeTitles="YES" id="oSb-QO-Y1E">
+                        <rect key="frame" x="0.0" y="20" width="375" height="96"/>
                         <autoresizingMask key="autoresizingMask"/>
-                        <color key="barTintColor" red="1" green="0.53834025850671063" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <color key="barTintColor" red="0.46666666666666667" green="0.83137254901960778" blue="0.83137254901960778" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <textAttributes key="titleTextAttributes">
                             <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         </textAttributes>
@@ -118,5 +117,5 @@
             <point key="canvasLocation" x="559" y="86"/>
         </scene>
     </scenes>
-    <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+    <color key="tintColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
 </document>
