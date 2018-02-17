@@ -11,6 +11,7 @@
 		F700C08320352C7C00E2ED9C /* CategoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F700C08220352C7C00E2ED9C /* CategoryViewController.swift */; };
 		F700C08720365B0000E2ED9C /* Item.swift in Sources */ = {isa = PBXBuildFile; fileRef = F700C08620365B0000E2ED9C /* Item.swift */; };
 		F700C08920365B0700E2ED9C /* Category.swift in Sources */ = {isa = PBXBuildFile; fileRef = F700C08820365B0700E2ED9C /* Category.swift */; };
+		F700C08D2036870600E2ED9C /* SwipeTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F700C08C2036870600E2ED9C /* SwipeTableViewController.swift */; };
 		F7C5D1E820328B3E0039DA0A /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C5D1E720328B3E0039DA0A /* AppDelegate.swift */; };
 		F7C5D1EA20328B3E0039DA0A /* DodoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C5D1E920328B3E0039DA0A /* DodoViewController.swift */; };
 		F7C5D1ED20328B3E0039DA0A /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7C5D1EB20328B3E0039DA0A /* Main.storyboard */; };
@@ -25,6 +26,7 @@
 		F700C08220352C7C00E2ED9C /* CategoryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryViewController.swift; sourceTree = "<group>"; };
 		F700C08620365B0000E2ED9C /* Item.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Item.swift; sourceTree = "<group>"; };
 		F700C08820365B0700E2ED9C /* Category.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Category.swift; sourceTree = "<group>"; };
+		F700C08C2036870600E2ED9C /* SwipeTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeTableViewController.swift; sourceTree = "<group>"; };
 		F7C5D1E420328B3E0039DA0A /* Dodo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Dodo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F7C5D1E720328B3E0039DA0A /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		F7C5D1E920328B3E0039DA0A /* DodoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DodoViewController.swift; sourceTree = "<group>"; };
@@ -97,6 +99,7 @@
 			isa = PBXGroup;
 			children = (
 				F700C08220352C7C00E2ED9C /* CategoryViewController.swift */,
+				F700C08C2036870600E2ED9C /* SwipeTableViewController.swift */,
 				F7C5D1E920328B3E0039DA0A /* DodoViewController.swift */,
 			);
 			path = Controllers;
@@ -209,11 +212,13 @@
 				"${SRCROOT}/Pods/Target Support Files/Pods-Dodo/Pods-Dodo-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/Realm/Realm.framework",
 				"${BUILT_PRODUCTS_DIR}/RealmSwift/RealmSwift.framework",
+				"${BUILT_PRODUCTS_DIR}/SwipeCellKit/SwipeCellKit.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Realm.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RealmSwift.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwipeCellKit.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -264,6 +269,7 @@
 				F700C08320352C7C00E2ED9C /* CategoryViewController.swift in Sources */,
 				F7C5D1EA20328B3E0039DA0A /* DodoViewController.swift in Sources */,
 				F7C5D1E820328B3E0039DA0A /* AppDelegate.swift in Sources */,
+				F700C08D2036870600E2ED9C /* SwipeTableViewController.swift in Sources */,
 				F700C08920365B0700E2ED9C /* Category.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

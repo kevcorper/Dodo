@@ -8,8 +8,9 @@
 
 import UIKit
 import RealmSwift
+import SwipeCellKit
 
-class CategoryViewController: UITableViewController {
+class CategoryViewController: SwipeTableViewController {
     
     let realm = try! Realm()
     var categories : Results<Category>?
@@ -26,9 +27,8 @@ class CategoryViewController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "CategoryCell", for: indexPath)
-        
-        cell.textLabel?.text = categories?[indexPath.row].name ?? "No Dodos added yet!"
+        let cell = super.tableView(tableView, cellForRowAt: indexPath)
+        cell.textLabel?.text = categories?[indexPath.row].name ?? "No categories added yet!"
         return cell
     }
     
@@ -49,7 +49,7 @@ class CategoryViewController: UITableViewController {
     @IBAction func addButtonPressed(_ sender: UIBarButtonItem) {
         var textField = UITextField()
         
-        let alert = UIAlertController(title: "Add new Dodo", message: "", preferredStyle: .alert)
+        let alert = UIAlertController(title: "Add new category", message: "", preferredStyle: .alert)
         
         let action = UIAlertAction(title: "Add category", style: .default) { (action) in
             
@@ -83,5 +83,26 @@ class CategoryViewController: UITableViewController {
     func loadCategories() {
         categories = realm.objects(Category.self)
         tableView.reloadData()
+    }
+    
+    // MARK: remove category
+    
+    override func deleteFromModel(at indexPath: IndexPath) {
+        if let categoryToDelete = self.categories?[indexPath.row] {
+            do {
+                try self.realm.write {
+                    self.realm.delete(categoryToDelete)
+                }
+            } catch {
+                print("could not delete category, \(error)")
+            }
+        }
+        tableView.reloadData()
+    }
+    
+    override func tableView(_ tableView: UITableView, editActionsOptionsForRowAt indexPath: IndexPath, for orientation: SwipeActionsOrientation) -> SwipeTableOptions {
+        var options = super.tableView(tableView, editActionsOptionsForRowAt: indexPath, for: orientation)
+        options.expansionStyle = .none
+        return options
     }
 }
