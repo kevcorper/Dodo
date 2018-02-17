@@ -36,18 +36,30 @@ class DodoViewController: SwipeTableViewController {
     }
     
     override func viewWillDisappear(_ animated: Bool) {
-        updateNavBar(withHexCode: "77D4D4")
+        updateNavBar(withHexCode: "77D4D4", withTextColor: "FFFFFF")
     }
     
     // MARK: Navbar setup methods
     
-    func updateNavBar(withHexCode colorHexCode: String) {
+    func updateNavBar(withHexCode colorHexCode: String, withTextColor textColorHexCode : String = "") {
         guard let navbar = navigationController?.navigationBar else {fatalError("Unable to retrieve navBar")}
         guard let navigationColor = UIColor(hexString: colorHexCode) else {fatalError("Unable to create original navigation color")}
+        let textColor : UIColor
+        
+        if textColorHexCode == "" {
+            textColor = ContrastColorOf(navigationColor, returnFlat: true)
+        } else {
+            textColor = UIColor(hexString: textColorHexCode)!
+        }
+    
         navbar.barTintColor = navigationColor
-        navbar.tintColor = ContrastColorOf(navigationColor, returnFlat: true)
-        navbar.largeTitleTextAttributes = [NSAttributedStringKey.foregroundColor: ContrastColorOf(navigationColor, returnFlat: true)]
+        navbar.tintColor = textColor
+        navbar.largeTitleTextAttributes = [NSAttributedStringKey.foregroundColor: textColor]
+        navbar.layer.borderColor = navigationColor.cgColor
         searchBar.barTintColor = navigationColor
+        searchBar.tintColor = navigationColor
+        searchBar.layer.borderWidth = 1
+        searchBar.layer.borderColor = navigationColor.cgColor
     }
     
     // MARK: Tableview Datasource Methods
@@ -65,6 +77,7 @@ class DodoViewController: SwipeTableViewController {
             if let color = UIColor(hexString: (selectedCategory!.color))?.darken(byPercentage: CGFloat(indexPath.row) / CGFloat(dodoItems!.count)) {
                     cell.backgroundColor = color
                     cell.textLabel?.textColor = ContrastColorOf(color, returnFlat: true)
+                    cell.tintColor = ContrastColorOf(color, returnFlat: true)
             }
         } else {
             cell.textLabel?.text = "No items have been added yet!"
@@ -163,4 +176,18 @@ extension DodoViewController : UISearchBarDelegate {
     }
 }
 
+
+class CustomTableViewCell: UITableViewCell
+{
+    required init(coder aDecoder: NSCoder)
+    {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    override init(style: UITableViewCellStyle, reuseIdentifier: String?)
+    {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        self.selectionStyle = UITableViewCellSelectionStyle.none
+    }
+}
 
