@@ -1,10 +1,10 @@
 # Dodo
 Easy to use iOS ToDo List with organized color gradients and simple UI.
 
-##Setup
+## Setup
 Clone project and open within Xcode. Update the necessary user fields for team and signing, and all is set
 
-##Tech and Pods Used
+## Tech and Pods Used
 ChameleonFramework
 SwipeCellKit
 RealmSwift
