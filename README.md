@@ -15,4 +15,4 @@ Clone project and open within Xcode. Update the necessary user fields for team a
 3. RealmSwift
 
 ## Credit
-Created through udemy course "iOS 11 & Swift 4 - The Complete iOS App Development Bootcamp" from Angela Yu
+Created through udemy course "iOS 11 & Swift 4 - The Complete iOS App Development Bootcamp", taught by Angela Yu
